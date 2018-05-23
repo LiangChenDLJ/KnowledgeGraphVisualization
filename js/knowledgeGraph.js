@@ -14,14 +14,6 @@ var initialGraph = function(){
         .force("charge", d3.forceManyBody())
         .force("center", d3.forceCenter(width / 2, height / 2));
 
-    var tooltip = d3.select("body")
-        .append("div")
-        .attr('class', 'tooltipm')
-        .style("position", "absolute")
-        .style("z-index", "10")
-        .style("visibility", "hidden")
-        .text("a simple tooltip");
-
     updateGraph = function() {
         graphLinkData = [];
         graphNodeData = {};

@@ -1,13 +1,17 @@
 var extracted_data;
 var relation_data
+var st_tags;
+var tooltip;
 
 $(document).ready(function() {
     d3.json("data/relation2id.json").then(function(data){
             relation_data = data;
-            d3.json("data/extracted.json")
-            .then(function(data) {
+            d3.json("data/extracted.json").then(function(data) {
                 extracted_data = data;
-                initializePage();
+                d3.json("data/STTags.json").then(function(data) {
+                    st_tags = data;
+                    initializePage();
+                });
             });
         });
 
@@ -38,6 +42,15 @@ initializePage = function() {
         return b[1] - a[1];
     })
     console.log(senArr);
+
+    tooltip = d3.select("body")
+        .append("div")
+        .attr('class', 'tooltipm')
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .text("a simple tooltip");
+
     initialGraph();
     initializeEntityFilter();
 };
