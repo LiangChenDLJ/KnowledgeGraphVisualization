@@ -1,7 +1,32 @@
 var allEntities = {};
 var filteredEntities = {'selected' : {}, 'unselected' : {}};
+var filteredRelations = {};
+
+// [[entity1-1, entity1-2], [entity2-1, entity2-2], ...]
+var filterOutput = [];
+var selectedTuple = [];
+
+// [{relationInd:123, tuples:['abc def', ...]}, ...]
+var relationSta = [];
 
 var initializeEntityFilter = function(){
+    $('#graphTabMenu .item').tab();
+    $('#nameFilterItem').tab({'onVisible':function(){
+            filterOutputFromName();
+        }});
+    $('#relationFilterItem').tab({'onVisible':function(){
+            filterOutputFromRelation();
+        }});
+
+    //relation Statistic
+    for(ind in relation_data){
+        relationSta.push({relationInd:ind, tuples:[]});
+    }
+    for(pair in extracted_data){
+        var relationInd = extracted_data[pair]['p'];
+        relationSta[relationInd]['tuples'].push(pair);
+    }
+
     for(entities_pair in extracted_data){
         entities_tuple = entities_pair.split(' ');
         if(entities_tuple[0] in allEntities === false) allEntities[entities_tuple[0]] = {};
@@ -30,7 +55,7 @@ var initializeEntityFilter = function(){
             }
             updateEntityList();
         }
-    })
+    });
     $('#selectAllEntityButton').click(function(){
         $('#entityList .ui.checkbox').checkbox('set checked');
         filteredEntities['selected'] = Object.assign(
@@ -76,7 +101,75 @@ var initializeEntityFilter = function(){
         }
         updateRelatedList();
     });
+    $('#seedExpanderInput').on('keypress', function(event){
+        if ( event.which == 13 ) {
+            event.preventDefault();
+            levelNum = $(this).find('input').val();
+            if(levelNum.match('[1-9]')){
+                newFilteredEntities = {selected:{}, unselected:{}};
+                for(entity1 in filteredEntities['selected']){
+                    newFilteredEntities['selected'][entity1] = {'selected':{}, 'unselected':{}};
+                    for(entity2 in allEntities[entity1]){
+                        newFilteredEntities['selected'][entity1]['selected'][entity2] = allEntities[entity1][entity2];
+                    }
+                }
+                for(level = 1; level < parseInt(levelNum); level++){
+                    for(entity1 in newFilteredEntities['selected']){
+                        for (entity2 in allEntities[entity1]){
+                            if(entity2 in newFilteredEntities['selected']) continue;
+                            newFilteredEntities['selected'][entity2] = {'selected':{}, 'unselected':{}};
+                            for(entity22 in allEntities[entity2]){
+                                newFilteredEntities['selected'][entity2]['selected'][entity22] = allEntities[entity2][entity22];
+                            }
+                        }
+                    }
+                }
+                filteredEntities = newFilteredEntities;
+                updateEntityList();
+            }
+        }
+    })
+    updateRelationList()
     updateEntityList();
+}
+
+var updateRelationList = function(){
+    d3.select('#relationList')
+        .selectAll('div')
+        .remove();
+    relationListData = relationSta.slice(0);
+    relationListData.sort(function(a,b){
+        return a['tuples'].length < b['tuples'].length ? 1 : -1 ;
+    });
+    var relationBox = d3.select('#relationList')
+        .selectAll('div')
+        .data(relationListData)
+        .enter()
+        .append('div')
+        .attr('class', "ui checkbox fillWidth");
+    relationBox.append('input')
+        .attr('type', 'checkbox')
+        .attr('name', function(d) {
+            return d['relationInd'];
+        })
+        .attr('class', 'hidden');
+    relationBox.append('label')
+        .attr('class', 'nowrap')
+        .text(function(d) {
+            return d['tuples'].length + ' : ' + relation_data[d['relationInd']];
+        });
+    $('#relationList .ui.checkbox').checkbox({
+        onChecked: function() {
+            var id = d3.select(this).data()[0]['relationInd'];
+            filteredRelations[id] = true;
+            filterOutputFromRelation();
+        },
+        onUnchecked: function() {
+            var id = d3.select(this).data()[0]['relationInd'];
+            delete filteredRelations[id];
+            filterOutputFromRelation();
+        }
+    });
 }
 
 var updateEntityList = function(){
@@ -107,6 +200,7 @@ var updateEntityList = function(){
         })
         .attr('class', 'hidden');
     entityBox.append('label')
+        .attr('class', 'nowrap')
         .text(function(d) {
             return d['entity'];
         });
@@ -129,6 +223,13 @@ var updateEntityList = function(){
             filteredEntities['unselected'][entity] = filteredEntities['selected'][entity];
             delete filteredEntities['selected'][entity];
             updateRelatedList();
+        }
+    });
+    d3.selectAll('#entityList .ui.checkbox').each(function(d){
+        if(d['entity'] in filteredEntities['selected']){
+            $(this).checkbox('set checked');
+        }else{
+            $(this).checkbox('set unchecked');
         }
     });
     updateRelatedList();
@@ -155,7 +256,9 @@ var updateRelatedList = function(){
         .attr('entity', function(d) {
             return d['entity'];
         });
-    relatedGroups.append('label').text(function(d) {
+    relatedGroups.append('label')
+        .attr('class', 'nowrap')
+        .text(function(d) {
             return d['entity'];
         });
     relatedGroups.each(function(d){
@@ -186,6 +289,7 @@ var updateRelatedList = function(){
                 return d['entity'];
             });
         relatedBox.append('label')
+            .attr('class', 'nowrap')
             .text(function(d) {
                 return d['entity'];
             });
@@ -212,7 +316,7 @@ var updateRelatedList = function(){
                     var cb = $('#relatedList .ui.checkbox input[groupname=\''+ entity2 +'\'][name=\''+ entity1 +'\']').parent();
                     cb.checkbox('set checked');
                 }
-                updateGraph();
+                filterOutputFromName();
             },
             onUnchecked: function() {
                 var entity1 = $(this).attr('groupname');
@@ -228,8 +332,43 @@ var updateRelatedList = function(){
                     var cb = $('#relatedList .ui.checkbox input[groupname=\''+ entity2 +'\'][name=\''+ entity1 +'\']').parent();
                     cb.checkbox("set unchecked");
                 }
-                updateGraph();
+                filterOutputFromName();
             }
     });
+    filterOutputFromName();
+}
+
+var filterOutputFromName = function(){
+    filterOutput = [];
+    for (var entity1 in filteredEntities['selected']) {
+        for (var entity2 in filteredEntities['selected'][entity1]['selected']) {
+            if (!(entity2 in filteredEntities['selected']) || filteredEntities['selected'][entity1]['selected'][entity2] == 'r') {
+                filterOutput.push(
+                    filteredEntities['selected'][entity1]['selected'][entity2] == 'r' ?
+                        [entity1, entity2] :
+                        [entity2, entity1]
+                );
+            }
+        }
+    }
+    updateFromFilter();
+}
+
+var filterOutputFromRelation = function(){
+    filterOutput = [];
+    for(relationInd in filteredRelations){
+        for(tupleInd in relationSta[relationInd]['tuples']){
+            tuple = relationSta[relationInd]['tuples'][tupleInd];
+            filterOutput.push(tuple.split(' '));
+        }
+    }
+    updateFromFilter();
+}
+
+var updateFromFilter = function(){
+    selectedTuple = [];
+    updateAttentionView();
+    updateAttentionDropdown();
+    updateWordCloud();
     updateGraph();
 }

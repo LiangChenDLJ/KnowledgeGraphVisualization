@@ -1,5 +1,5 @@
 var extracted_data;
-var relation_data
+var relation_data;
 var st_tags;
 var tooltip;
 
@@ -10,6 +10,7 @@ $(document).ready(function() {
                 extracted_data = data;
                 d3.json("data/STTags.json").then(function(data) {
                     st_tags = data;
+                    console.log(st_tags);
                     initializePage();
                 });
             });
@@ -20,6 +21,7 @@ $(document).ready(function() {
 // initialize full webpage
 // remove all svg and set all checkbox to unchecked
 initializePage = function() {
+    //sentence Statistic;
     var senSta = {};
     for(pair in extracted_data){
         var sentences = extracted_data[pair]['o'];
@@ -52,6 +54,7 @@ initializePage = function() {
         .text("a simple tooltip");
 
     initialGraph();
+    initialAttentionView();
     initializeEntityFilter();
 };
 

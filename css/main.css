@@ -1,13 +1,23 @@
+.ui.top.attached.tabular.menu{
+    height:5%;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
 
 .links line {
-    stroke: #999;
     stroke-opacity: 0.6;
-    stroke-width:2;
 }
 
 .nodes circle {
     stroke: #fff;
     stroke-width: 1.5px;
+}
+
+.myInlineDiv{
+    padding-right:10px;
+    display:inline-block;
 }
 
 #mainView{
@@ -16,7 +26,7 @@
 }
 
 #nameFilterTab{
-    height:100%;
+    height:95%;
     width:100%;
 }
 
@@ -33,6 +43,24 @@
     padding-top: 10px;
     overflow-y: auto;
 }
+
+#relationFilterListDiv {
+    height: 100%;
+    width: 100%;
+}
+
+#relationList {
+     height: 90%;
+     width: 100%;
+     padding-top: 10px;
+     overflow-y: auto;
+ }
+
+#relationFilterTab{
+    height:95%;
+    width:100%;
+}
+
 #entityNameFilter {
     width: 50%;
 }
@@ -47,14 +75,42 @@
     width: 100%;
 }
 
-#knowledgeGraphDiv {
-    height: 50%;
+#mainFrame {
+    height: 100%;
     padding: 0px;
 }
 
+#attentionViewDropdownDiv{
+    max-width:50%;
+}
+
+#knowledgeGraphTab{
+    height:95%;
+}
+
+#wordCloudTab{
+    height:95%;
+}
+
+#knowledgeGraphDiv{
+    width:100%;
+    height:50%;
+}
+
 #attentionView {
+    padding:7px 7px 7px 7px!important;
     height: 50%;
     width: 100%;
+}
+
+.entitypairEntity{
+    border-width:2px;
+    border-style:solid;
+    border-color:#000;
+}
+
+#attentionViewSentences{
+    height:calc(100% - 60px);
     overflow-x: auto;
     overflow-y: auto;
 }
@@ -70,14 +126,21 @@
 
 .attentionWord{
     text-align: left;
+    display:inline-block;
     white-space: nowrap;
     margin-right: 5px;
+    margin-bottom: 3px;
+    vertical-align:top
 }
 .main {
     width: 100%;
     position: absolute;
     top: 0px;
     bottom: 0;
+}
+
+#attentionViewTools{
+    height:35px;
 }
 
 .tooltipm {
@@ -93,6 +156,7 @@
     width: auto;
     color: #fff;
 }
+
 /*
 body {
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
