@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>AntVis</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="semantic/dist/semantic.min.js"></script>
+    <script src="d3-force/d3-force.min.js"></script>
+    <script src="d3/d3.min.js"></script>
+    <script src="js/d3.v3.refine.js"></script>
+    <script src="js/cloud.js"></script>
+    <style type="text/css">
+        .sentenceAttentionValBar{
+            vertical-align: top;
+            display:inline-block;
+            width:10%;
+        }
+        .ui.progress{
+            margin-bottom:0!important;
+        }
+        .ui.checkbox{
+            display:block;
+        }
+    </style>
+
+</head>
+
+<body>
+<div class="main">
+    <div class="ui grid" id="mainView">
+        <div class="four wide column" id="panel">
+            <div class="ui top attached tabular menu" id="filterTabMenu">
+            <a class="active item" data-tab="filterFirst" id="nameFilterItem">Name Filter</a>
+            <a class="item" data-tab="filterSecond" id="relationFilterItem">Relation Filter</a>
+        </div>
+            <div class="ui bottom attached active tab segment" id='nameFilterTab' data-tab="filterFirst">
+            <div id="entityNameFilter">
+                <label class="ui Font">Search Entities</label>
+                <div id="entityNameFilterInput" class="ui input focus">
+                    <input type="text">
+                </div>
+            </div>
+            <div class="ui two column grid" id="nameFilterListDiv">
+                <div class="column">
+                    <div id="entityList">
+                    </div>
+                    <div class="ui buttons">
+                        <button id='selectAllEntityButton' class="ui button">All</button>
+                        <button id='selectNoneEntityButton' class="ui button">None</button>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui celled relaxed list" id="relatedList">
+                    </div>
+                    <div class="ui buttons">
+                        <button id='selectAllRelatedButton' class="ui button">All</button>
+                        <button id='selectNoneRelatedButton' class="ui button">None</button>
+                    </div>
+                </div>
+            </div>
+            <div id="seedExpander">
+                <label class="ui Font">Expand Level</label>
+                <div id="seedExpanderInput" class="ui input focus">
+                    <input type="text">
+                </div>
+            </div>
+        </div>
+            <div class="ui bottom attached tab segment" id='relationFilterTab' data-tab="filterSecond">
+            <div class="ui one column grid" id="relationFilterListDiv">
+                <div class="column">
+                    <div id="relationList">
+                    </div>
+                    <div class="ui buttons">
+                        <button id='selectAllRelationButton' class="ui button">All</button>
+                        <button id='selectNoneRelationButton' class="ui button">None</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="ten wide column" id="mainChart">
+                <div class="ui top attached tabular menu" id="graphTabMenu">
+                    <a class="active item" data-tab="graphFirst" id="knowledgeGraphItem">Knowledge Graph</a>
+                    <a class="item" data-tab="graphSecond" id="wordCloudItem">Word Cloud</a>
+                </div>
+                <div class="ui bottom attached active tab segment" id='knowledgeGraphTab' data-tab="graphFirst">
+                    <div id="mainFrame">
+                        <div id="knowledgeGraphDiv">
+                            <svg id="knowledgeGraph" width="100%" height="100%"></svg>
+                        </div>
+                        <div class="ui raised segment" id="attentionView">
+                        <div id="attentionViewTools">
+                            <div class="myInlineDiv" id="attentionViewDropdownDiv">
+                                <select class="ui search selection dropdown" id="attentionViewDropDown">
+                                </select>
+                            </div>
+                            <div class="myInlineDiv">
+                                <div id='attentionHighlightCheckBox' class="ui checkbox fillWidth">
+                                    <input type="checkbox" name="HighLight" class="hidden">
+                                    <label>Highlight</label>
+                                    </input>
+                                </div>
+                            </div>
+                            <div class="myInlineDiv">
+                                <div id='attentionSpaTagCheckBox' class="ui checkbox fillWidth">
+                                    <input type="checkbox" name="SpaTag" class="hidden">
+                                    <label>Spatial Tag</label>
+                                    </input>
+                                </div>
+                            </div>
+                            <div class="myInlineDiv">
+                                <div id='attentionTemTagCheckBox' class="ui checkbox fillWidth">
+                                    <input type="checkbox" name="TemTag" class="hidden">
+                                    <label>Temporal Tag</label>
+                                    </input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui divider"></div>
+                        <div id="attentionViewSentences">
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="ui bottom attached tab segment" id='wordCloudTab' data-tab="graphSecond">
+
+                </div>
+            </div>
+        </div>
+        <div class="two wide column" id="chart">
+
+        </div>
+    </div>
+</div>
+</div>
+</body>
+
+</html>
+<script src="js/attentionView.js"></script>
+<script src="js/knowledgeGraph.js"></script>
+<script src="js/entityFilter.js"></script>
+<script src="js/main.js"></script>
