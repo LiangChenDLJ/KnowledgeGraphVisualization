@@ -9,6 +9,47 @@ var selectedTuple = [];
 // [{relationInd:123, tuples:['abc def', ...]}, ...]
 var relationSta = [];
 
+var recPreSta = [];
+
+var entityDegreeFilter = function(){
+    var fromVal = $('#entityDegreeFilterFromInput').find('input').val();
+    var toVal = $('#entityDegreeFilterToInput').find('input').val();
+    if(fromVal.match('[0-9]+')!= null) fromVal = parseInt(fromVal);
+    else fromVal = Number.MIN_VALUE;
+    if(toVal.match('[0-9]+')!= null) toVal = parseInt(toVal);
+    else toVal = Number.MAX_VALUE;
+
+    for(entity1 in filteredEntities['selected']){
+        degree = Object.keys(allEntities[entity1]).length;
+        if(!(degree >= fromVal && degree < toVal)){
+            filteredEntities['unselected'][entity1] = filteredEntities['selected'][entity1];
+            delete filteredEntities['selected'][entity1];
+        }
+    }
+    for(entity1 in filteredEntities['unselected']){
+        degree = Object.keys(allEntities[entity1]).length;
+        if(degree >= fromVal && degree < toVal){
+            filteredEntities['selected'][entity1] = {'selected' :{}, 'unselected' : {}};
+            for(entity2 in allEntities[entity1]){
+                filteredEntities['selected'][entity1]['selected'][entity2] = allEntities[entity1][entity2];
+            }
+            delete filteredEntities['unselected'][entity1];
+        }
+    }
+    chooseEntityList();
+}
+
+var chooseEntityList = function(){
+    d3.selectAll('#entityList .ui.checkbox').each(function(d){
+        if(d['entity'] in filteredEntities['selected']){
+            $(this).checkbox('set checked');
+        }else{
+            $(this).checkbox('set unchecked');
+        }
+    });
+    updateRelatedList();
+}
+
 var initializeEntityFilter = function(){
     $('#graphTabMenu .item').tab();
     $('#nameFilterItem').tab({'onVisible':function(){
@@ -19,12 +60,24 @@ var initializeEntityFilter = function(){
         }});
 
     //relation Statistic
+    // recall&Precision Statistic
+    relationSta = [];
+    recPreSta = [];
     for(ind in relation_data){
         relationSta.push({relationInd:ind, tuples:[]});
+        recPreSta.push({trueNum : 0, truePosNum : 0, posNum : 0});
     }
     for(pair in extracted_data){
         var relationInd = extracted_data[pair]['p'];
+        var relationTrueId = extracted_data[pair]['t'];
+        recPreSta[relationInd]['posNum'] += 1;
+        recPreSta[relationTrueId]['trueNum'] += 1;
+        if(relationInd == relationTrueId) recPreSta[relationTrueId]['truePosNum'] += 1;
         relationSta[relationInd]['tuples'].push(pair);
+    }
+    for(relInd in recPreSta){
+        recPreSta[relInd]['precision'] = recPreSta[relInd]['truePosNum']/recPreSta[relInd]['posNum'];
+        recPreSta[relInd]['recall'] = recPreSta[relInd]['truePosNum']/recPreSta[relInd]['trueNum'];
     }
 
     for(entities_pair in extracted_data){
@@ -129,48 +182,53 @@ var initializeEntityFilter = function(){
             }
         }
     })
+    $('#entityDegreeFilterFromInput').on('keypress', function(event){
+        if ( event.which == 13 ) {
+            entityDegreeFilter();
+        }
+    });
+    $('#entityDegreeFilterToInput').on('keypress', function(event){
+        if ( event.which == 13 ) {
+            entityDegreeFilter();
+        }
+    });
     updateRelationList()
     updateEntityList();
 }
 
 var updateRelationList = function(){
-    d3.select('#relationList')
-        .selectAll('div')
-        .remove();
-    relationListData = relationSta.slice(0);
-    relationListData.sort(function(a,b){
-        return a['tuples'].length < b['tuples'].length ? 1 : -1 ;
+
+    d3.select('#relationTable tbody').selectAll('tr').remove();
+
+    relationListData = relationSta.filter(function(d){
+        return d['relationInd'] > 0 && recPreSta[d['relationInd']]['posNum'] > 0;
     });
-    var relationBox = d3.select('#relationList')
-        .selectAll('div')
+
+    var relationTableRow = d3.select('#relationTable tbody')
+        .selectAll('tr')
         .data(relationListData)
         .enter()
-        .append('div')
-        .attr('class', "ui checkbox fillWidth");
-    relationBox.append('input')
-        .attr('type', 'checkbox')
-        .attr('name', function(d) {
-            return d['relationInd'];
-        })
-        .attr('class', 'hidden');
-    relationBox.append('label')
-        .attr('class', 'nowrap')
-        .text(function(d) {
-            return d['tuples'].length + ' : ' + relation_data[d['relationInd']];
-        });
-    $('#relationList .ui.checkbox').checkbox({
-        onChecked: function() {
-            var id = d3.select(this).data()[0]['relationInd'];
-            filteredRelations[id] = true;
-            filterOutputFromRelation();
-        },
-        onUnchecked: function() {
-            var id = d3.select(this).data()[0]['relationInd'];
+        .append('tr');
+
+    relationTableRow.append('td').text(function(d) {return relation_data[d['relationInd']]});
+    relationTableRow.append('td').text(function(d) {return recPreSta[d['relationInd']]['posNum']});
+    relationTableRow.append('td').text(function(d) {return recPreSta[d['relationInd']]['precision']});
+    relationTableRow.append('td').text(function(d) {return recPreSta[d['relationInd']]['recall']});
+
+    relationTableRow.on('click', function(d){
+        var id = d3.select(this).data()[0]['relationInd'];
+        if(d3.select(this).classed('active')){
+            d3.select(this).classed('active', false);
             delete filteredRelations[id];
-            filterOutputFromRelation();
+        }else{
+            d3.select(this).classed('active', true);
+            filteredRelations[id] = true;
         }
+        filterOutputFromRelation();
     });
-}
+
+    $('#relationTable').tablesort();}
+
 
 var updateEntityList = function(){
     d3.select('#entityList')
@@ -225,14 +283,8 @@ var updateEntityList = function(){
             updateRelatedList();
         }
     });
-    d3.selectAll('#entityList .ui.checkbox').each(function(d){
-        if(d['entity'] in filteredEntities['selected']){
-            $(this).checkbox('set checked');
-        }else{
-            $(this).checkbox('set unchecked');
-        }
-    });
-    updateRelatedList();
+    chooseEntityList();
+
 }
 
 var updateRelatedList = function(){
@@ -259,7 +311,8 @@ var updateRelatedList = function(){
     relatedGroups.append('label')
         .attr('class', 'nowrap')
         .text(function(d) {
-            return d['entity'];
+            degree = Object.keys(d['related']['selected']).length + Object.keys(d['related']['unselected']).length;
+            return d['entity'] + '(' + degree + ')';
         });
     relatedGroups.each(function(d){
         var relatedEntitiesData = [];

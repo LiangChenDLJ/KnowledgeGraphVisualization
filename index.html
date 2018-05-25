@@ -13,6 +13,7 @@
     <script src="d3/d3.min.js"></script>
     <script src="js/d3.v3.refine.js"></script>
     <script src="js/cloud.js"></script>
+    <script src="js/tablesort.js"></script>
     <style type="text/css">
         .sentenceAttentionValBar{
             vertical-align: top;
@@ -30,57 +31,94 @@
 </head>
 
 <body>
-<div class="main">
+<div id="main">
     <div class="ui grid" id="mainView">
-        <div class="four wide column" id="panel">
+        <div class="four wide column" id="filterPanel">
             <div class="ui top attached tabular menu" id="filterTabMenu">
-            <a class="active item" data-tab="filterFirst" id="nameFilterItem">Name Filter</a>
-            <a class="item" data-tab="filterSecond" id="relationFilterItem">Relation Filter</a>
-        </div>
-            <div class="ui bottom attached active tab segment" id='nameFilterTab' data-tab="filterFirst">
-            <div id="entityNameFilter">
-                <label class="ui Font">Search Entities</label>
-                <div id="entityNameFilterInput" class="ui input focus">
-                    <input type="text">
-                </div>
+                <a class="active item" data-tab="filterFirst" id="entityFilterItem">Entity Filter</a>
+                <a class="item" data-tab="filterSecond" id="relationFilterItem">Relation Filter</a>
             </div>
-            <div class="ui two column grid" id="nameFilterListDiv">
-                <div class="column">
+            <div class="ui bottom attached active tab segment" id='nameFilterTab' data-tab="filterFirst">
+                <div class="ui grid" id="topFilterBar">
+                    <div class="eight wide column" id="entityNameFilter">
+                        <label class="ui Font">Search Entities</label>
+                        <div id="entityNameFilterInput" class="ui input">
+                            <input type="text">
+                        </div>
+                    </div>
+                    <div class="eight wide column" id="entityDegreeFilter">
+                        <label class="ui Font">Search by Degree</label>
+                        <div class="ui grid">
+                            <div class="eight wide column">
+                        <div id="entityDegreeFilterFromInput" class="ui input">
+                            <input type="text">
+                        </div>
+                            </div>
+                            <div class="eight wide column">
+                            <div id="entityDegreeFilterToInput" class="ui input">
+                                <input type="text">
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui two column grid" id="nameFilterListDiv">
+                <div class="column listColumn">
                     <div id="entityList">
                     </div>
-                    <div class="ui buttons">
+                    <div class="ui buttons selectButtonPair">
                         <button id='selectAllEntityButton' class="ui button">All</button>
                         <button id='selectNoneEntityButton' class="ui button">None</button>
                     </div>
                 </div>
-                <div class="column">
-                    <div class="ui celled relaxed list" id="relatedList">
+                <div class="column listColumn">
+                    <div id="relatedList">
                     </div>
-                    <div class="ui buttons">
+                    <div class="ui buttons selectButtonPair">
                         <button id='selectAllRelatedButton' class="ui button">All</button>
                         <button id='selectNoneRelatedButton' class="ui button">None</button>
                     </div>
                 </div>
             </div>
-            <div id="seedExpander">
+                <div id="seedExpander">
                 <label class="ui Font">Expand Level</label>
                 <div id="seedExpanderInput" class="ui input focus">
                     <input type="text">
                 </div>
             </div>
-        </div>
-            <div class="ui bottom attached tab segment" id='relationFilterTab' data-tab="filterSecond">
-            <div class="ui one column grid" id="relationFilterListDiv">
-                <div class="column">
-                    <div id="relationList">
-                    </div>
-                    <div class="ui buttons">
-                        <button id='selectAllRelationButton' class="ui button">All</button>
-                        <button id='selectNoneRelationButton' class="ui button">None</button>
-                    </div>
-                </div>
             </div>
-        </div>
+            <div class="ui bottom attached tab segment" id='relationFilterTab' data-tab="filterSecond">
+                <table class="ui sortable celled table" id="relationTable">
+                    <thead>
+                    <tr>
+                        <th class="sorted ascending">RelationType</th>
+                        <th class="">Triple Number</th>
+                        <th class="">Precision</th>
+                        <th class="">Recall</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="active">
+                        <td>Contains</td>
+                        <td>100</td>
+                        <td>0.01</td>
+                        <td>0.02</td>
+                    </tr>
+                    <tr>
+                        <td>Contains</td>
+                        <td>100</td>
+                        <td>0.01</td>
+                        <td>0.02</td>
+                    </tr>
+                    <tr>
+                        <td>Contains</td>
+                        <td>100</td>
+                        <td>0.01</td>
+                        <td>0.02</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
         </div>
         <div class="ten wide column" id="mainChart">
                 <div class="ui top attached tabular menu" id="graphTabMenu">
@@ -127,7 +165,6 @@
                     </div>
                 </div>
                 <div class="ui bottom attached tab segment" id='wordCloudTab' data-tab="graphSecond">
-
                 </div>
             </div>
         </div>

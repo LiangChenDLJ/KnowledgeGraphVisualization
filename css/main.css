@@ -15,14 +15,36 @@
     stroke-width: 1.5px;
 }
 
+.selectButtonPair{
+    height:40px;
+}
+
 .myInlineDiv{
     padding-right:10px;
     display:inline-block;
 }
 
+.listColumn{
+    height:100%;
+}
+
+#filterPanel{
+    height:100%;
+}
+
+
+#entityDegreeFilterFromInput{
+    width:100%
+}
+
+#entityDegreeFilterToInput{
+    width:100%
+}
+
+
 #mainView{
     width:100%;
-    height: 100%;
+    height:100%;
 }
 
 #nameFilterTab{
@@ -31,14 +53,14 @@
 }
 
 #entityList {
-    height: 80%;
-    width: 100%;
+    height:calc(100% - 40px);
+    width:100%;
     padding-top: 10px;
     overflow-y: auto;
 }
 
 #relatedList {
-    height: 80%;
+    height: calc(100% - 40px);
     width: 100%;
     padding-top: 10px;
     overflow-y: auto;
@@ -59,10 +81,19 @@
 #relationFilterTab{
     height:95%;
     width:100%;
+    overflow:auto;
+}
+
+#topFilterBar{
+    height:60px;
 }
 
 #entityNameFilter {
-    width: 50%;
+    height:100%;
+}
+
+#entityDegreeFilter{
+    height:100%;
 }
 
 #entityNameFiterInput {
@@ -71,8 +102,13 @@
 }
 
 #nameFilterListDiv {
-    height: 80%;
+    height: calc(100% - 120px);
     width: 100%;
+}
+
+#seedExpander{
+    height:60px;
+    width:50%;
 }
 
 #mainFrame {
@@ -132,7 +168,8 @@
     margin-bottom: 3px;
     vertical-align:top
 }
-.main {
+#main {
+    margin:1rem;
     width: 100%;
     position: absolute;
     top: 0px;
