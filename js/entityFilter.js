@@ -53,10 +53,10 @@ var chooseEntityList = function(){
 var initializeEntityFilter = function(){
     $('#graphTabMenu .item').tab();
     $('#nameFilterItem').tab({'onVisible':function(){
-            filterOutputFromName();
+            //filterOutputFromName();
         }});
     $('#relationFilterItem').tab({'onVisible':function(){
-            filterOutputFromRelation();
+            //filterOutputFromRelation();
         }});
 
     //relation Statistic
@@ -208,7 +208,8 @@ var updateRelationList = function(){
         .selectAll('tr')
         .data(relationListData)
         .enter()
-        .append('tr');
+        .append('tr')
+        .style('color', function(d){return relationColorScale(d['relationInd'] / relation_data.length)});
 
     relationTableRow.append('td').text(function(d) {return relation_data[d['relationInd']]});
     relationTableRow.append('td').text(function(d) {return recPreSta[d['relationInd']]['posNum']});
@@ -420,6 +421,7 @@ var filterOutputFromRelation = function(){
 
 var updateFromFilter = function(){
     selectedTuple = [];
+    updateChartsPanel();
     updateAttentionView();
     updateAttentionDropdown();
     updateWordCloud();

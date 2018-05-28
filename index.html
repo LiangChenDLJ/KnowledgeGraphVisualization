@@ -14,6 +14,8 @@
     <script src="js/d3.v3.refine.js"></script>
     <script src="js/cloud.js"></script>
     <script src="js/tablesort.js"></script>
+    <script src="js/densityPlot.js"></script>
+    <script src="js/d3pie.min.js"></script>
     <style type="text/css">
         .sentenceAttentionValBar{
             vertical-align: top;
@@ -33,7 +35,7 @@
 <body>
 <div id="main">
     <div class="ui grid" id="mainView">
-        <div class="four wide column" id="filterPanel">
+        <div class="five wide column" id="filterPanel">
             <div class="ui top attached tabular menu" id="filterTabMenu">
                 <a class="active item" data-tab="filterFirst" id="entityFilterItem">Entity Filter</a>
                 <a class="item" data-tab="filterSecond" id="relationFilterItem">Relation Filter</a>
@@ -120,7 +122,7 @@
                 </table>
             </div>
         </div>
-        <div class="ten wide column" id="mainChart">
+        <div class="eight wide column" id="mainChart">
                 <div class="ui top attached tabular menu" id="graphTabMenu">
                     <a class="active item" data-tab="graphFirst" id="knowledgeGraphItem">Knowledge Graph</a>
                     <a class="item" data-tab="graphSecond" id="wordCloudItem">Word Cloud</a>
@@ -157,6 +159,9 @@
                                     </input>
                                 </div>
                             </div>
+                            <div class="myInlineDiv" id="accuracyDisplay">
+
+                            </div>
                         </div>
                         <div class="ui divider"></div>
                         <div id="attentionViewSentences">
@@ -167,16 +172,20 @@
                 <div class="ui bottom attached tab segment" id='wordCloudTab' data-tab="graphSecond">
                 </div>
             </div>
-        </div>
-        <div class="two wide column" id="chart">
-
+        <div class="three wide column" id="chartsPanel">
+            <svg id="degreeDensityChart" class="infoChartsSmall">
+            </svg>
+            <svg id="accuracyDensityChart" class="infoChartsSmall">
+            </svg>
+            <svg id="relationPieChart" viewbox='0 0 300 500'class="infoChartsBig">
+            </svg>
         </div>
     </div>
-</div>
 </div>
 </body>
 
 </html>
+<script src="js/chartsPanel.js"></script>
 <script src="js/attentionView.js"></script>
 <script src="js/knowledgeGraph.js"></script>
 <script src="js/entityFilter.js"></script>

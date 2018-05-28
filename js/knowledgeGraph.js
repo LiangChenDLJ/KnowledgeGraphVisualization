@@ -63,7 +63,7 @@ var updateWordCloud = function(){
 var initialGraph = function(){
     $('#filterTabMenu .item').tab();
     var viewBoxInitW = 700;
-    var viewBox = {'x' : '0', 'y' : '0', 'w' : 700, 'h' : 300};
+    var viewBox = {'x' : 0, 'y' : 0, 'w' : 700, 'h' : 300};
 
     var tarAlpha = 0.2
 
@@ -81,6 +81,7 @@ var initialGraph = function(){
         knowledgeGraphSVG.attr('viewBox', viewBox['x']+ ' ' + viewBox['y'] + ' ' + viewBox['w'] + ' ' + viewBox['h']);
     }
 
+    var draggingLastPos;
     $('#knowledgeGraph').bind('mousewheel', function(e){
         e.preventDefault();
         var thisScale = 1;
@@ -97,12 +98,30 @@ var initialGraph = function(){
         var yc = e.offsetY * viewBox['h']/screenSize['y'] + viewBox['y'];
         viewBox['x'] = thisScale * viewBox['x'] + (1 - thisScale) * xc;
         viewBox['y'] = thisScale * viewBox['y'] + (1 - thisScale) * yc;
-        viewBox['w'] = viewBox['w'] *thisScale;
+        viewBox['w'] = viewBox['w'] * thisScale;
         viewBox['h'] = viewBox['h'] * thisScale;
         updateFromViewBox();
+    }).bind('mousedown', function(e){
+        e.preventDefault();
+        draggingLastPos = [
+            e.offsetX * viewBox['w']/$('#knowledgeGraph').width() + viewBox['x'],
+            e.offsetY * viewBox['h']/$('#knowledgeGraph').height()+ viewBox['y']
+        ];
+        $(this).mousemove(function(e){
+            e.preventDefault();
+            var draggingThisPos = [
+                e.offsetX * viewBox['w']/$('#knowledgeGraph').width() + viewBox['x'],
+                e.offsetY * viewBox['h']/$('#knowledgeGraph').height()+ viewBox['y']
+            ];
+            viewBox['x'] = draggingLastPos[0] - draggingThisPos[0] + viewBox['x'];
+            viewBox['y'] = draggingLastPos[1] - draggingThisPos[1] + viewBox['y'];
+            updateFromViewBox();
+            draggingLastPos = draggingThisPos;
+        }).mouseup(function(){
+            e.preventDefault();
+            $(this).unbind('mouseup').unbind('mousemove');
+        })
     });
-
-    var colorScale = d3.interpolateRainbow;
 
     var simulation = d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
@@ -112,6 +131,7 @@ var initialGraph = function(){
     updateGraph = function() {
         graphLinkData = [];
         graphNodeData = {};
+        nodeDegrees = {};
         for(tupleInd in filterOutput){
             tuple = filterOutput[tupleInd];
             graphLinkData.push({
@@ -119,8 +139,20 @@ var initialGraph = function(){
                 "target": tuple[1],
                 "value": extracted_data[tuple[0] + ' ' + tuple[1]]['p']
             })
+            if(tuple[0] in nodeDegrees){
+                nodeDegrees[tuple[0]] += 1;
+            }else
+                nodeDegrees[tuple[0]] = 1;
+            if(tuple[1] in nodeDegrees){
+                nodeDegrees[tuple[1]] += 1;
+            }else
+                nodeDegrees[tuple[1]] = 1;
             graphNodeData[tuple[0]] = {'id': tuple[0], 'group': 1};
             graphNodeData[tuple[1]] = {'id': tuple[1], 'group': 1};
+        }
+        for(dataItem in graphNodeData){
+            graphNodeData[dataItem]['group'] =
+                nodeDegrees[dataItem];
         }
         graphNodeData = Object.values(graphNodeData);
 
@@ -131,7 +163,7 @@ var initialGraph = function(){
             .data(graphLinkData)
             .enter().append("line")
             .attr('stroke', function(d){
-                return colorScale(d['value'] / relation_data.length);
+                return relationColorScale(d['value'] / relation_data.length);
             })
             .attr('stroke-width', 2)
             .on('mouseover', function (d) {
@@ -139,9 +171,12 @@ var initialGraph = function(){
                     .html(function () {
                         var relation = extracted_data[d["source"]['id'] + ' ' + d['target']['id']];
                         var relationName = relation_data[relation['p']];
+                        var relationAccu = relation['a']
                         var displayinfo = "<span style='color:#d9e778'>" + "<strong>" + relationName + "</strong><br>";
+
                         displayinfo += "<strong>" + d["source"]['id'] + "</strong><br>";
-                        displayinfo += "<strong>" + d["target"]['id'] + "</strong>";
+                        displayinfo += "<strong>" + d["target"]['id'] + "</strong><br>";
+                        displayinfo += "<strong>" + "Accuracy : " + relationAccu + "</strong>";
                         displayinfo += "</span>";
                         return displayinfo;
                     })
@@ -168,7 +203,7 @@ var initialGraph = function(){
             .enter().append("circle")
             .attr("r", 5)
             .attr("fill", function (d) {
-                return colorScale(d.group);
+                return d3.interpolateOrRd(Math.tanh(d.group) / 2);
             })
             .call(d3.drag()
                 .on("start", dragstarted)

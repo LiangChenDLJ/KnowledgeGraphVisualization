@@ -2,6 +2,9 @@ var extracted_data;
 var relation_data;
 var st_tags;
 var tooltip;
+var spaTemEdit = {};
+var relationColorScale = d3.interpolateRainbow;
+var entityDegrees = {};
 
 $(document).ready(function() {
     d3.json("data/relation2id.json").then(function(data){
@@ -43,6 +46,21 @@ initializePage = function() {
     senArr.sort(function(a, b){
         return b[1] - a[1];
     })
+
+    for(pair in extracted_data){
+        entities = pair.split(' ');
+        if(entities[0] in entityDegrees){
+            entityDegrees[entities[0]] += 1;
+        }else{
+            entityDegrees[entities[0]] = 1;
+        }
+        if(entities[1] in entityDegrees){
+            entityDegrees[entities[1]] += 1;
+        }else{
+            entityDegrees[entities[1]] = 1;
+        }
+    }
+
     console.log(senArr);
 
     tooltip = d3.select("body")

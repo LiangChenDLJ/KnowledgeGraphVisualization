@@ -1,5 +1,7 @@
 const dropdownDefalutValue = '';
 
+var spaTemEdit = {};
+
 var initialAttentionView = function(){
     $('#attentionTemTagCheckBox').checkbox({onChange:function(){
         updateTemTag();
@@ -51,6 +53,7 @@ var updateAttentionDropdown = function(){
 }
 
 var updateAttentionView = function(){
+    d3.select('#accuracyDisplay').text('');
     d3.select('#attentionViewSentences').selectAll('div').remove();
     if(selectedTuple.length == 0) return;
     var entityTuple = selectedTuple;
@@ -58,6 +61,10 @@ var updateAttentionView = function(){
     var sentences = relationInstance['o'];
     var sentenceAttention = relationInstance['s'];
     var wordAttention = relationInstance['w'];
+    d3.select('#accuracyDisplay').text(
+        'Accuracy : ' + relationInstance['a']
+    );
+
     var displayData = []
     for(ind in sentences){
         var sentenceWord = [];
@@ -84,6 +91,9 @@ var updateAttentionView = function(){
         }
         displayData.push({word:sentenceWord, attention:sentenceAttention[ind]});
     }
+    displayData.sort(function(a,b){
+        return a['attention'] < b['attention'] ? 1 : -1 ;
+    });
     var attentionSentences = d3.select('#attentionViewSentences')
         .selectAll('div').data(displayData).enter()
         .append('div').attr('class', 'attentionSentence');
@@ -98,7 +108,7 @@ var updateAttentionView = function(){
         .attr('x', 0)
         .attr('y', 0)
         .attr('width', function(d){
-            return parseInt(d['attention'] * 100);
+            return (d['attention'] * 100).toPrecision(2);
         })
         .attr('height', 15)
         .attr('fill', function(d){
