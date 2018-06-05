@@ -173,8 +173,8 @@ var initialGraph = function(){
             .on('mouseover', function (d) {
                 tooltip
                     .html(function () {
-                        var temRed = '#db2828';
-                        var spaBlue = '#2185d0';
+                        var spaRed = '#db2828';
+                        var temBlue = '#2185d0';
                         var relation = extracted_data[d["source"]['id'] + ' ' + d['target']['id']];
                         var relationName = relation_data[relation['p']];
                         var relationAccu = relation['a'];
@@ -185,10 +185,10 @@ var initialGraph = function(){
                         displayinfo += "<strong>" + "Accuracy : " + relationAccu + "</strong>";
                         displayinfo += "</span>";
                         if(tagInfo['spa'] != ''){
-                            displayinfo += "<span style='color:" +spaBlue + "'><br/><strong>Spartial Tag: " + tagInfo['spa'] + "</strong><span>";
+                            displayinfo += "<span style='color:" + spaRed + "'><br/><strong>Spartial Tag: " + tagInfo['spa'] + "</strong><span>";
                         }
                         if(tagInfo['tem'] != ''){
-                            displayinfo += "<span style='color:" +temRed + "'><br/><strong>Temporal Tag: " + tagInfo['tem'] + "</strong><span>";
+                            displayinfo += "<span style='color:" + temBlue + "'><br/><strong>Temporal Tag: " + tagInfo['tem'] + "</strong><span>";
                         }
                         return displayinfo;
                     })
