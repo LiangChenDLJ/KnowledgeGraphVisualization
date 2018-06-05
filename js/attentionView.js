@@ -1,6 +1,4 @@
-const dropdownDefalutValue = '';
-
-var spaTemEdit = {};
+const dropdownDefaultValue = '';
 
 var initialAttentionView = function(){
     $('#attentionTemTagCheckBox').checkbox({onChange:function(){
@@ -19,18 +17,36 @@ var initialAttentionView = function(){
         fullTextSearch:true,
         match:'text'
     });
+    $('#spaTagInput').on('keypress', function(event){
+        if ( event.which == 13 ) {
+            event.preventDefault();
+            if(selectedTuple.length == 0) return;
+            factName = selectedTuple[0] + ' ' + selectedTuple[1];
+            var spaTag = $(this).find('input').val();
+            spaTemEdit[factName]['spa'] = spaTag;
+        }
+    });
+    $('#temTagInput').on('keypress', function(event){
+        if ( event.which == 13 ) {
+            event.preventDefault();
+            if(selectedTuple.length == 0) return;
+            factName = selectedTuple[0] + ' ' + selectedTuple[1];
+            var temTag = $(this).find('input').val();
+            spaTemEdit[factName]['tem'] = temTag;
+        }
+    });
 
 }
 
 var updateSelectedTupleFromDropdown = function(){
     value = $('#attentionViewDropDown').dropdown('get value');
-    selectedTuple = ((value == null || value == dropdownDefalutValue) ? [] : value.split(' '));
-    chooseGraph();
+    selectedTuple = ((value == null || value == dropdownDefaultValue) ? [] : value.split(' '));
     updateAttentionView();
+    chooseGraph();
 }
 
 var chooseAttentionDropdown = function(){
-    $('#attentionViewDropDown').dropdown('set selected', selectedTuple.length == 0 ? dropdownDefalutValue : selectedTuple[0] + ' ' + selectedTuple[1]);
+    $('#attentionViewDropDown').dropdown('set selected', selectedTuple.length == 0 ? dropdownDefaultValue : selectedTuple[0] + ' ' + selectedTuple[1]);
 }
 
 var updateAttentionDropdown = function(){
@@ -70,6 +86,10 @@ var updateAttentionView = function(){
     d3.select('#accuracyDisplay').text(
         'Accuracy : ' + relationInstance['a']
     );
+
+    tagInfo = spaTemEdit[entityTuple[0] + ' ' + entityTuple[1]];
+    $('#spaTagInput').find('input').val(tagInfo['spa']);
+    $('#temTagInput').find('input').val(tagInfo['tem']);
 
     var displayData = []
     for(ind in sentences){

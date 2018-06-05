@@ -6,6 +6,7 @@ var spaTemEdit = {};
 var relationColorScale = d3.interpolateRainbow;
 var entityDegrees = {};
 
+
 $(document).ready(function() {
     d3.json("data/relation2id.json").then(function(data){
             relation_data = data;
@@ -60,8 +61,10 @@ initializePage = function() {
             entityDegrees[entities[1]] = 1;
         }
     }
-
-    console.log(senArr);
+    for(pair in extracted_data){
+        spaTemEdit[pair] = {spa:'', tem:''};
+    }
+    //console.log(senArr);
 
     tooltip = d3.select("body")
         .append("div")

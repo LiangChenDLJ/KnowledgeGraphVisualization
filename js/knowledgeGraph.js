@@ -173,15 +173,23 @@ var initialGraph = function(){
             .on('mouseover', function (d) {
                 tooltip
                     .html(function () {
+                        var temRed = '#db2828';
+                        var spaBlue = '#2185d0';
                         var relation = extracted_data[d["source"]['id'] + ' ' + d['target']['id']];
                         var relationName = relation_data[relation['p']];
-                        var relationAccu = relation['a']
-                        var displayinfo = "<span style='color:#d9e778'>" + "<strong>" + relationName + "</strong><br>";
-
-                        displayinfo += "<strong>" + d["source"]['id'] + "</strong><br>";
-                        displayinfo += "<strong>" + d["target"]['id'] + "</strong><br>";
+                        var relationAccu = relation['a'];
+                        var tagInfo = spaTemEdit[d["source"]['id'] + ' ' + d['target']['id']];
+                        var displayinfo = "<span style='color:#d9e778'>" + "<strong>" + relationName + "</strong><br/>";
+                        displayinfo += "<strong>" + d["source"]['id'] + "</strong><br/>";
+                        displayinfo += "<strong>" + d["target"]['id'] + "</strong><br/>";
                         displayinfo += "<strong>" + "Accuracy : " + relationAccu + "</strong>";
                         displayinfo += "</span>";
+                        if(tagInfo['spa'] != ''){
+                            displayinfo += "<span style='color:" +spaBlue + "'><br/><strong>Spartial Tag: " + tagInfo['spa'] + "</strong><span>";
+                        }
+                        if(tagInfo['tem'] != ''){
+                            displayinfo += "<span style='color:" +temRed + "'><br/><strong>Temporal Tag: " + tagInfo['tem'] + "</strong><span>";
+                        }
                         return displayinfo;
                     })
                     .style("left", (d3.event.pageX) + "px")
@@ -287,10 +295,15 @@ var initialGraph = function(){
             d.fx = null;
             d.fy = null;
         }
+
+        chooseGraph();
     }
 }
 
 var chooseGraph = function(){
-    // todo
-    return;
+    d3.select('#knowledgeGraph .links').selectAll('line')
+        .attr('stroke-width', function(d){
+        return selectedTuple.length != 0 && d['source']['id'] == selectedTuple[0] && d['target']['id'] == selectedTuple[1] ?
+            4 : 2;
+    });
 }

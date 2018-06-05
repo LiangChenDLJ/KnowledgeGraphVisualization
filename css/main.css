@@ -139,12 +139,12 @@
 
 #knowledgeGraphDiv{
     width:100%;
-    height:50%;
+    height:40%;
 }
 
 #attentionView {
     padding:7px 7px 7px 7px!important;
-    height: 50%;
+    height: 60%;
     width: 100%;
 }
 
@@ -154,10 +154,18 @@
     border-color:#000;
 }
 
+#attentionViewTools{
+    height:35px;
+}
+
 #attentionViewSentences{
-    height:calc(100% - 60px);
+    height:calc(100% - 100px);
     overflow-x: auto;
     overflow-y: auto;
+}
+
+#tagEditor{
+    height:35px;
 }
 
 .attentionSentence{
@@ -183,10 +191,6 @@
     position: absolute;
     top: 0px;
     bottom: 0;
-}
-
-#attentionViewTools{
-    height:35px;
 }
 
 .tooltipm {
