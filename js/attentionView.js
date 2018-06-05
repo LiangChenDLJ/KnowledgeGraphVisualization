@@ -13,15 +13,20 @@ var initialAttentionView = function(){
         updateHighLight();
     }});
     $('#attentionViewDropDown').dropdown({
-        onChange:function(value, text, $selectedItem){
-            selectedTuple = (value == dropdownDefalutValue ? [] : value.split(' '));
-            chooseGraph();
-            updateAttentionView();
+        onChange:function(value){
+            updateSelectedTupleFromDropdown();
         },
         fullTextSearch:true,
         match:'text'
     });
 
+}
+
+var updateSelectedTupleFromDropdown = function(){
+    value = $('#attentionViewDropDown').dropdown('get value');
+    selectedTuple = ((value == null || value == dropdownDefalutValue) ? [] : value.split(' '));
+    chooseGraph();
+    updateAttentionView();
 }
 
 var chooseAttentionDropdown = function(){
@@ -50,6 +55,7 @@ var updateAttentionDropdown = function(){
     options.append('span').text(function(d){
         return relation_data[d[1]];
     });
+    updateSelectedTupleFromDropdown();
 }
 
 var updateAttentionView = function(){

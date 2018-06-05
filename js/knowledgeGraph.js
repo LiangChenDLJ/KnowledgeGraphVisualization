@@ -63,6 +63,7 @@ var updateWordCloud = function(){
 var initialGraph = function(){
     $('#filterTabMenu .item').tab();
     var viewBoxInitW = 700;
+    var viewBoxInitH = 300;
     var viewBox = {'x' : 0, 'y' : 0, 'w' : 700, 'h' : 300};
 
     var tarAlpha = 0.2
@@ -121,6 +122,9 @@ var initialGraph = function(){
             e.preventDefault();
             $(this).unbind('mouseup').unbind('mousemove');
         })
+    }).on( "dblclick", function(){
+        viewBox = {'x' : 0, 'y' : 0, 'w' : 700, 'h' : 300};
+        updateFromViewBox();
     });
 
     var simulation = d3.forceSimulation()

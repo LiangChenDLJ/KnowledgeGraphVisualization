@@ -12,7 +12,7 @@ var updateDegreeDensityChart = function(){
         nodeDegrees[tuple[1]] = entityDegrees[tuple[1]];
     }
     data = Object.values(nodeDegrees);
-    initialDensityPlot('Degree\'s kernel Density Estimation', '#degreeDensityChart', data, [Math.min(...data), Math.max(...data) + 1]);
+    initialDensityPlot('Degree\'s kernel Density Estimation', '#degreeDensityChart', data, [Math.min(...data), Math.max(...data) + 1], 7);
 }
 
 var updateAccuracyDensityChart = function(){
@@ -22,7 +22,7 @@ var updateAccuracyDensityChart = function(){
         accuracy.push(extracted_data[tuple[0] + ' ' + tuple[1]]['a']);
     }
     data = accuracy;
-    initialDensityPlot('Accuracy\'s kernel Density Estimation', '#accuracyDensityChart', data, [Math.min(...accuracy) - 0.1, Math.max(...accuracy)]);
+    initialDensityPlot('Accuracy\'s kernel Density Estimation', '#accuracyDensityChart', data, [Math.min(...accuracy) - 0.1, Math.max(...accuracy)], 1);
 }
 
 var updateRelationPieChart = function(){
@@ -104,6 +104,27 @@ var drawpie = function(data){
             "gradient": {
                 "enabled": true,
                 "percentage": 100
+            }
+        },
+        callbacks: {
+            onMouseoverSegment: function(info) {
+                tooltip
+                    .html(function () {
+                        var displayinfo = "<span style='color:#d9e778'>";
+                        displayinfo += "<strong>" + info['data']['label'] + "</strong><br/>"
+                        displayinfo += "<strong>" + info['data']['percentage'] + "%" + "</strong>"
+                        displayinfo += "</span>";
+                        return displayinfo;
+                    })
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY + 20) + "px")
+                    .style("visibility", "visible");
+            },
+            onMouseoutSegment: function(info) {
+                if (!(tooltip.style("visibility") === "visible")) {
+                    return;
+                }
+                tooltip.style("visibility", "hidden");
             }
         }
     });

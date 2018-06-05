@@ -12,7 +12,7 @@
     <script>
 */
 
-var initialDensityPlot = function(chartName, svgID, data, rangeX) {
+var initialDensityPlot = function(chartName, svgID, data, rangeX, kernelParam) {
     d3.select(svgID).selectAll('g').remove();
     d3.select(svgID).selectAll('path').remove();
     var n = data.length;
@@ -27,17 +27,19 @@ var initialDensityPlot = function(chartName, svgID, data, rangeX) {
         .range([margin.left, width - margin.right]);
 
     var bins = d3.histogram().domain(x.domain()).thresholds(40)(data);
-
     possMax = 0;
     for(i in bins){
         if(bins[i].length > possMax) possMax = bins[i].length;
     }
-
+    kernelParam = rangeX[1] - rangeX[0] > 0.1 ? (rangeX[1] - rangeX[0])/ 3 : 0.5;
+    var density = kernelDensityEstimator(kernelEpanechnikov(kernelParam), x.ticks(40))(data);
+    possMax /= n;
+    for(i in density){
+        if(density[0][1] > possMax) possMax = density[0][1];
+    }
     var y = d3.scaleLinear()
-        .domain([0, possMax / n])
+        .domain([0, possMax])
         .range([height - margin.bottom, margin.top]);
-
-    var density = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(40))(data);
 
     svg.append("g")
         .attr("class", "axis axis--x")
