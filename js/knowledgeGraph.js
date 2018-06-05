@@ -185,7 +185,7 @@ var initialGraph = function(){
                         displayinfo += "<strong>" + "Accuracy : " + relationAccu + "</strong>";
                         displayinfo += "</span>";
                         if(tagInfo['spa'] != ''){
-                            displayinfo += "<span style='color:" + spaRed + "'><br/><strong>Spartial Tag: " + tagInfo['spa'] + "</strong><span>";
+                            displayinfo += "<span style='color:" + spaRed + "'><br/><strong>Spatial Tag: " + tagInfo['spa'] + "</strong><span>";
                         }
                         if(tagInfo['tem'] != ''){
                             displayinfo += "<span style='color:" + temBlue + "'><br/><strong>Temporal Tag: " + tagInfo['tem'] + "</strong><span>";
